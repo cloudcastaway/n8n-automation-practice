@@ -1,0 +1,183 @@
+{
+  "name": "pet-adoption-email",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "authentication": "airtableTokenApi",
+        "baseId": {
+          "__rl": true,
+          "value": "https://airtable.com/appHIBzsGUGF8PIGC/tbl9bJMN4X7407nrq/viwzhfwq3DfJHqDTh?blocks=hide",
+          "mode": "url"
+        },
+        "tableId": {
+          "__rl": true,
+          "value": "https://airtable.com/appHIBzsGUGF8PIGC/tbl9bJMN4X7407nrq/viwzhfwq3DfJHqDTh?blocks=hide",
+          "mode": "url"
+        },
+        "triggerField": "Pet Name",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.airtableTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f507c79e-67e6-4576-a33f-f08c202ada49",
+      "name": "Airtable Trigger",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "MvkmqeTHJ2UqaePx",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-3.5-turbo",
+          "mode": "list",
+          "cachedResultName": "GPT-3.5-TURBO"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are assisting with pet adoption coordination at our pet shop.\n\nEach time a new pet is added to the system, you need to summarize their details in a short email to the adoption team. Make it clear, informative, and friendly.\n\nHere are the details of the pet:\n\n- Name: {{ $json.fields[\"Pet Name\"] }}\n- Species: {{ $json.fields.Species }}\n- Age: {{ $json.fields[\"Age (Years)\"] }} years\n- Vaccinated: {{ $json.fields.Vaccinated ? \"Yes\" : \"No\" }}\n- Adoption Status: {{ $json.fields[\"Adoption Status\"] }}\n\nPlease provide the following output parameters:\n\nemail_subject: A short, professional title for the email  \nemail_content: A well-formatted, friendly message including all details above. Sign it as \"The Pet Shop Team\"\n\nMake a clean body with newlines if needed.\n"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        220,
+        0
+      ],
+      "id": "447a9089-253d-4bad-b590-0e45ce374e34",
+      "name": "OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "ptSMFnfw6XEoia3V",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "bpolizeli@outlook.com",
+        "subject": "={{ $json.message.content.email_subject }}",
+        "emailType": "text",
+        "message": "={{ $json.message.content.email_content }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        596,
+        0
+      ],
+      "id": "cd47b730-f61f-48f1-98a5-8e45a392db12",
+      "name": "Gmail",
+      "webhookId": "c0d6999f-7d72-4f04-9e28-57493224d707",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "hJPn2YtNEdIK6cHO",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Checks every minute for a new record in the table. If found, it fetches that record.",
+        "width": 150,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -40,
+        -180
+      ],
+      "typeVersion": 1,
+      "id": "cccece37-b219-48b9-a88a-8ea3c5a9b392",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "Generates a formatted message using the data from all columns in the new row.",
+        "width": 150,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        260,
+        -180
+      ],
+      "typeVersion": 1,
+      "id": "8472e3f6-082f-4031-baf9-523cf2b90ccd",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "Sends the message generated in the previous step to a designated email address.",
+        "width": 150,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        560,
+        -180
+      ],
+      "typeVersion": 1,
+      "id": "12240d56-8074-4af0-b95d-1d7286f7d93b",
+      "name": "Sticky Note2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Airtable Trigger": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "bb3927da-4e7f-47bb-8ecd-3593cdfdb834",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "646a42b8dab53226c3d52842d4efa26c940093856efa44080e16bf3ed27da4e6"
+  },
+  "id": "OughCSN4CCoN9SH2",
+  "tags": []
+}
