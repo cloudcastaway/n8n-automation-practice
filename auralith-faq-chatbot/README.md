@@ -1,59 +1,55 @@
 # Auralith FAQ Chatbot
 
-This repository contains two n8n workflows that power the Auralith FAQ Chatbot: an AI-enhanced assistant capable of responding to user messages using a semantic FAQ database, and a document ingestion system to keep that database updated via Google Drive uploads.
+This project contains two n8n workflows that power the Auralith FAQ Chatbot: a chat assistant capable of responding to user messages using a vector-based FAQ system, and an uploader that keeps the knowledge base up to date via Google Drive.
 
 ## Overview
 
-The system consists of two main workflows:
+The chatbot is built from two connected workflows:
 
 1. **Auralith Chat Agent**  
-   Responds to user messages using context, semantic FAQ search, and a language model. Can also store user contact information.
+   Handles incoming messages, searches a vector FAQ database, and generates natural language responses.
 
 2. **Auralith Uploader**  
-   Monitors a Google Drive folder for new files, extracts and processes their contents, and updates the Pinecone vector database with embeddings.
+   Monitors a Google Drive folder for new files, processes and embeds their content, and stores the embeddings in Pinecone.
 
 ## Workflows
 
 ### 1. Auralith Chat Agent
 
-This workflow manages user interactions through a chat interface. It uses memory, semantic search, and a chat model to provide relevant answers from the FAQ vector store.
+This workflow listens for user input and responds intelligently using memory, FAQ retrieval, and OpenAI’s chat model. It can optionally store user data in Airtable.
 
-#### Features
+**Features:**
+- Listens for incoming chat messages
+- Maintains conversation context with memory
+- Uses vector search to retrieve FAQ content
+- Generates contextual responses with OpenAI
+- Optionally stores user contacts in Airtable
 
-- Routes and interprets incoming chat messages
-- Maintains memory to preserve conversational context
-- Retrieves FAQ answers using semantic vector search
-- Uses OpenAI to generate contextual responses
-- Optionally stores user contact data in Airtable
-
-#### Annotated Diagram
+**Diagram:**
 
 ![Auralith Chat Agent](./images/auralith-chat-agent-annotated.png)
 
-#### JSON Export
-
-- [Download Auralith Chat Agent Workflow](./workflows/auralith-chat-agent.json)
+**JSON Export:**
+- [auralith-chat-agent.json](./workflows/auralith-chat-agent.json)
 
 ---
 
 ### 2. Auralith Uploader
 
-This workflow supports the chat agent by ingesting new files into the FAQ system. It extracts, splits, embeds, and indexes document content for use in future semantic queries.
+This workflow ingests documents uploaded to Google Drive and keeps the FAQ database updated by converting them into vector embeddings.
 
-#### Features
+**Features:**
+- Detects new files in Google Drive
+- Extracts and splits document content
+- Generates embeddings using OpenAI
+- Stores chunks in Pinecone for semantic retrieval
 
-- Watches Google Drive for new file uploads
-- Extracts and splits file content into chunks
-- Creates vector embeddings using OpenAI
-- Stores data in Pinecone for fast vector search
-
-#### Annotated Diagram
+**Diagram:**
 
 ![Auralith Uploader](./images/auralith-uploader-annotated.png)
 
-#### JSON Export
-
-- [Download Auralith Uploader Workflow](./workflows/auralith-uploader.json)
+**JSON Export:**
+- [auralith-uploader.json](./workflows/auralith-uploader.json)
 
 ---
 
@@ -65,36 +61,26 @@ This workflow supports the chat agent by ingesting new files into the FAQ system
 - [Airtable](https://airtable.com)
 - [Google Drive API](https://developers.google.com/drive)
 
-## Deployment
+## Setup
 
-### Requirements
+### Prerequisites
 
-- Running n8n instance (local, Docker, or Render)
+- A running instance of n8n (locally or hosted)
 - API keys for OpenAI, Pinecone, Airtable, and Google Drive
-- Necessary credentials configured in n8n
+- Environment variables configured inside n8n for each integration
 
-### Setup Instructions
+### Deployment Steps
 
-1. Import the provided JSON workflows into your n8n instance.
-2. Configure authentication for all connected services (OpenAI, Pinecone, Airtable, Google Drive).
-3. Deploy the Auralith Chat Agent to handle incoming chat messages.
-4. Activate the Auralith Uploader to ingest files from Google Drive automatically.
-
----
+1. Import both JSON workflows into your n8n instance.
+2. Set up authentication for all services.
+3. Connect the Auralith Chat Agent to your preferred messaging platform.
+4. Activate the Auralith Uploader to monitor your Google Drive folder.
 
 ## Testing
 
-- Use "Test workflow" in n8n to simulate a document upload or message.
-- Upload supported files to Google Drive and verify they appear in Pinecone.
-- Send a sample message to the chatbot and confirm the semantic response is accurate.
-
----
-
-## Notes
-
-The workflows include visual annotations explaining the function of each node. These are visible in the annotated screenshots above. No additional `NOTES.md` is necessary.
-
----
+- Upload a `.txt`, `.docx`, or `.pdf` file to Google Drive and verify that it is processed and stored in Pinecone.
+- Send a message to the chatbot and confirm that it retrieves and responds with relevant FAQ content.
+- Use the "Test workflow" button in n8n to simulate individual steps.
 
 ## File Structure
 
