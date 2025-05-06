@@ -1,0 +1,419 @@
+{
+  "name": "Auralith Chat Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "mode": "webhook",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -100,
+        0
+      ],
+      "id": "0dba386f-e774-41b6-b2d1-73ef1b02b485",
+      "name": "When chat message received",
+      "webhookId": "12c97d1a-5bd5-49b9-8069-3319f4ac1141"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=# Role:\nYou are a knowledgeable and helpful assistant for a renewable energy company named **Auralith Dynamics**.\n\n## Task:\nYou answer questions about the company’s wind energy products, services, and operations.\n\n## Details:\nYou have access to various tools and resources, which you use effectively to provide accurate and relevant information.\n\n## Tools:\n- **auralith_faq**  \n  Use this tool to answer questions with knowledge about the company, including technology, locations, support, and contact details.\n\n- **airtable_contacts**  \n  Use this tool to store contact information such as name, email, interest, and phone number.  \n  After a customer asks about opening hours, products, or business information, ask them for their name, email, specific interests, and phone number.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        276,
+        0
+      ],
+      "id": "badb5038-c40c-467d-9799-04a982fb61b4",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        20,
+        200
+      ],
+      "id": "258f2b9b-c14d-457d-8778-51cb6e6135ae",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "k6Pyshrmyh8kvz6V",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 29
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        140,
+        200
+      ],
+      "id": "86e52c4a-d57b-4c89-8f77-9d1e0a1a76d8",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "description": "Answers questions about Auralith Dynamics."
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1.1,
+      "position": [
+        440,
+        260
+      ],
+      "id": "a1a41e96-70f5-4557-b7b0-a830fb22b2d3",
+      "name": "auralith_faq"
+    },
+    {
+      "parameters": {
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "auralith-faq",
+          "mode": "list",
+          "cachedResultName": "auralith-faq"
+        },
+        "options": {
+          "pineconeNamespace": "FAQ"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.1,
+      "position": [
+        100,
+        440
+      ],
+      "id": "ab38d777-9500-454f-a12f-83d901f7f38e",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "w8LdlVNp83eFjkC9",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        620,
+        460
+      ],
+      "id": "ea6d70a0-f95d-4976-8f47-a562df6237d7",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "k6Pyshrmyh8kvz6V",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        100,
+        620
+      ],
+      "id": "f16da135-5642-4846-b69f-c6667a0a5a81",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "k6Pyshrmyh8kvz6V",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appxqHKHqofv3wdtA",
+          "mode": "list",
+          "cachedResultName": "auralith-rag",
+          "cachedResultUrl": "https://airtable.com/appxqHKHqofv3wdtA"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblrRHuASpuqT5shk",
+          "mode": "list",
+          "cachedResultName": "leads",
+          "cachedResultUrl": "https://airtable.com/appxqHKHqofv3wdtA/tblrRHuASpuqT5shk"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Name', ``, 'string') }}",
+            "Phone": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Phone', ``, 'string') }}",
+            "Email": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Email', ``, 'string') }}",
+            "Interests": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Interests', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Interests",
+              "displayName": "Interests",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtableTool",
+      "typeVersion": 2.1,
+      "position": [
+        900,
+        240
+      ],
+      "id": "3cb045ef-91fa-4637-9a83-86187dbb910f",
+      "name": "airtable_contacts",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "PlTFylf9dHBjalzD",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Receives incoming chat messages from users and forwards them to the AI Agent for processing.",
+        "height": 260,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        -100
+      ],
+      "id": "b7c29435-2984-44ab-a5c3-dee3919b0831",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "Used by the AI Agent to retrieve FAQ answers using semantic similarity when relevant.",
+        "height": 200,
+        "width": 300,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        420,
+        180
+      ],
+      "id": "684c535d-29ff-40e6-b544-9b49dc997489",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "Handles the semantic similarity search using the vector database behind the FAQ system.",
+        "height": 200,
+        "width": 300,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        80,
+        360
+      ],
+      "id": "0e763047-ebe1-4d59-acab-97297840e50c",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "Stores user information for lead tracking or follow-up",
+        "height": 220,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        820,
+        160
+      ],
+      "id": "c9052908-1876-4c84-9b07-62d38d405258",
+      "name": "Sticky Note3"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "auralith_faq": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "auralith_faq",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "auralith_faq",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "airtable_contacts": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "578671e7-ded2-4d60-b4d4-2c8440d88b83",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6f4f524c315a78d6d334218b56a37eb1c3d445a621abc97fa800c5b4c2a6aab5"
+  },
+  "id": "0caXf2NZnJ5uvhtB",
+  "tags": [
+    {
+      "name": "auralith rag",
+      "id": "Tm3GudbkzwAb4bZz",
+      "createdAt": "2025-05-06T21:56:33.441Z",
+      "updatedAt": "2025-05-06T21:56:33.441Z"
+    }
+  ]
+}
