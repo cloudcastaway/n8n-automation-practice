@@ -1,0 +1,278 @@
+{
+  "name": "Telegram Multitool Chat Agent — Basic",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -320,
+        -180
+      ],
+      "id": "a2f1ee74-61b4-497f-9240-06cd37c2f13e",
+      "name": "Telegram Trigger",
+      "webhookId": "2831d3cc-66d5-411d-a37f-7c34aafb190f",
+      "credentials": {
+        "telegramApi": {
+          "id": "X0GkKgWP65YPd91x",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "=You are a helpful assistant\n\n# Your tools:\n\n## search_agent: use this tool to search the web on up-to-date info.\n## calculator: use this tool to do math."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        -100,
+        -180
+      ],
+      "id": "4cedc7b3-5579-445e-899f-c6022735f5d3",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -320,
+        100
+      ],
+      "id": "6dd5c15d-3965-418d-8097-2cd7f363ac33",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "k6Pyshrmyh8kvz6V",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        260,
+        -180
+      ],
+      "id": "aa8cbe70-aaff-4800-8e18-ab77a082e726",
+      "name": "Telegram",
+      "webhookId": "a633e561-e695-4cca-8b98-bdd60b3a236a",
+      "credentials": {
+        "telegramApi": {
+          "id": "X0GkKgWP65YPd91x",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "contextWindowLength": 20
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -100,
+        100
+      ],
+      "id": "d0701744-8fdd-4f18-9f7b-2b5ecce818fd",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "description": "Use this tool to search the web on up-to-date info.",
+        "workflowId": {
+          "__rl": true,
+          "value": "BWfEkGMFuYXXDYLj",
+          "mode": "list",
+          "cachedResultName": "Telegram1 Sub Workflow Search"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        320,
+        100
+      ],
+      "id": "02ad5ea0-0200-4978-9177-f47e600dddab",
+      "name": "search_agent"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        100,
+        100
+      ],
+      "id": "96f2dc7a-99e4-43cb-95c7-11b7ed2b696b",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {
+        "content": "Maintains the last 20 user messages to preserve short-term conversational context.",
+        "height": 220,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -180,
+        0
+      ],
+      "id": "315c4195-4bb7-4a47-8588-a0ae48594b1c",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "Calls the Search Agent sub-workflow to handle queries requiring web or topic lookup.",
+        "height": 220,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        240,
+        0
+      ],
+      "id": "9e0ae64d-6503-4860-8c92-9498dedb579e",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "Sends the final response back to the user via Telegram.",
+        "height": 220,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        200,
+        -240
+      ],
+      "id": "8ccb7254-8f02-4d0f-afa4-b004eec924b0",
+      "name": "Sticky Note2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "search_agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "5a521316-051e-4e45-b0d5-265bfbe35ff7",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6f4f524c315a78d6d334218b56a37eb1c3d445a621abc97fa800c5b4c2a6aab5"
+  },
+  "id": "Gv8Zr0ZQ1IzXurhU",
+  "tags": [
+    {
+      "name": "basic telegram multitool",
+      "id": "FMFlC0flOGC1K9Ob",
+      "createdAt": "2025-05-06T23:22:42.776Z",
+      "updatedAt": "2025-05-06T23:22:42.776Z"
+    }
+  ]
+}
