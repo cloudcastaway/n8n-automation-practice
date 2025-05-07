@@ -6,10 +6,13 @@ This collection includes both independently built workflows and others created b
 
 ## Projects
 
-### Original Project
+### Original Projects
 
 - **[Daily Briefing Bot](./daily-briefing-bot)**  
   Automates the delivery of personalized daily briefings via Telegram or email. It gathers user-specific data such as city and currency preferences, retrieves relevant weather and exchange rate information, and formats the output using OpenAI.
+
+- **[YouTube Tracker](./youtube-tracker)**  
+  Monitors a list of YouTube channels and sends Telegram alerts only when new videos match custom keywords. Logs relevant videos to Airtable and updates timestamps to prevent duplicates.
 
 ### Walkthrough-Based Projects
 
