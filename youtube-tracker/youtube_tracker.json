@@ -1,0 +1,676 @@
+{
+  "name": "youtube-tracker",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 3
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        60,
+        280
+      ],
+      "id": "31802fcc-02de-4316-b111-b88d298f2637",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        380,
+        260
+      ],
+      "id": "abb2011a-4aee-463f-a992-6e6f55780da4",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "url": "=https://www.googleapis.com/youtube/v3/search?channelId={{ $json.channel_id }}&part=snippet&order=date&type=video&maxResults=1&key=AIzaSyC0PeBxp_EvHUPPlI4FPkZchAQv9c9d4Cw",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "channelId",
+              "value": "={{$json.channel_id}}"
+            },
+            {
+              "name": "part",
+              "value": "snippet"
+            },
+            {
+              "name": "order",
+              "value": "date"
+            },
+            {
+              "name": "type",
+              "value": "video"
+            },
+            {
+              "name": "maxResults",
+              "value": "1"
+            },
+            {
+              "name": "key",
+              "value": "AIzaSyC0PeBxp_EvHUPPlI4FPkZchAQv9c9d4Cw"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        580,
+        0
+      ],
+      "id": "2e75099d-fde7-45ec-bf52-5c342fa534bc",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b72ef9ae-8d60-4cdc-b153-84c10983861f",
+              "leftValue": "={{ $json.published_at }}",
+              "rightValue": "={{ $('get_channels_info').item.json.last_published_at }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "after"
+              }
+            },
+            {
+              "id": "8fb2bcc8-13f8-4421-a14d-f7403473ec39",
+              "leftValue": "={{ Array.isArray($json.matched_keyword) ? $json.matched_keyword.filter(e => !!e && e.trim && e.trim() !== \"\").join(\",\") : ($json.matched_keyword ?? '').toString().trim() }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1100,
+        -80
+      ],
+      "id": "2298fd1f-de6b-4a42-8809-5cd07572245b",
+      "name": "If"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1100,
+        140
+      ],
+      "id": "7715df90-9cee-4507-836d-5ed349bc6f63",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "chatId": "6642407116",
+        "text": "=🎬 New video by {{ $('title_matches_keywords').item.json.channel_name }}\n\"{{ $('title_matches_keywords').item.json.video_title }}\"  \n👉 https://youtu.be/{{ $('title_matches_keywords').item.json.video_id }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1460,
+        -100
+      ],
+      "id": "1bb62839-549c-4f3a-8135-bd9a60d93051",
+      "name": "Telegram",
+      "webhookId": "6426e041-c492-4a0f-baa9-5dbab989a61b",
+      "credentials": {
+        "telegramApi": {
+          "id": "IxZtI0cV5xLx4jIH",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5e3d0db8-83ee-4547-9e9b-da1efb0e48d9",
+              "name": "record_id",
+              "value": "={{ $('get_channels_info').item.json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "9321c458-d817-44ab-acf5-3cde630ccfaa",
+              "name": "video_id",
+              "value": "={{$json.items[0].id.videoId}}",
+              "type": "string"
+            },
+            {
+              "id": "59e0e26d-431d-4d3b-acd2-74f357344c86",
+              "name": "=video_title",
+              "value": "={{$json.items[0].snippet.title}}",
+              "type": "string"
+            },
+            {
+              "id": "7a91c01c-3b49-4838-8972-abc07a0fcd89",
+              "name": "published_at",
+              "value": "={{$json.items[0].snippet.publishedAt}}",
+              "type": "string"
+            },
+            {
+              "id": "857b12ad-a410-4a87-b374-c90cf688341a",
+              "name": "channel_name",
+              "value": "={{ $('get_channels_info').item.json.channel_name }}",
+              "type": "string"
+            },
+            {
+              "id": "9f1caa5f-9a36-4862-a63d-5ed03be42612",
+              "name": "last_published_at",
+              "value": "={{ $('get_channels_info').item.json.last_published_at }}",
+              "type": "string"
+            },
+            {
+              "id": "a203b9dd-e85d-4a94-87c8-547da51267ff",
+              "name": "keywords",
+              "value": "={{ $('get_channels_info').item.json.keywords }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        760,
+        280
+      ],
+      "id": "8522ab11-7cb6-4637-b568-2a3dce7fd3c3",
+      "name": "extract_video_info"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ac1b5dd7-da6d-426b-8942-1b57155dd780",
+              "name": "video_link",
+              "value": "=https://youtu.be/{{$json.video_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1280,
+        -100
+      ],
+      "id": "d1ab6a21-6ad3-4111-82e7-14e0fafa7674",
+      "name": "build_video_link"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appj0uoMAjfFQy7pp",
+          "mode": "list",
+          "cachedResultName": "youtube tracker",
+          "cachedResultUrl": "https://airtable.com/appj0uoMAjfFQy7pp"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl99lmxz4m6qcxTg",
+          "mode": "list",
+          "cachedResultName": "channels",
+          "cachedResultUrl": "https://airtable.com/appj0uoMAjfFQy7pp/tbl99lmxz4m6qcxTg"
+        },
+        "options": {
+          "fields": [
+            "channel_id",
+            "channel_name",
+            "last_published_at",
+            "keywords"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        220,
+        0
+      ],
+      "id": "b39ea4fe-02b3-41a3-93d5-43439eaa5dfa",
+      "name": "get_channels_info",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "PlTFylf9dHBjalzD",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appj0uoMAjfFQy7pp",
+          "mode": "list",
+          "cachedResultName": "youtube tracker",
+          "cachedResultUrl": "https://airtable.com/appj0uoMAjfFQy7pp"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblUaKjuNryXnNKRN",
+          "mode": "list",
+          "cachedResultName": "videos",
+          "cachedResultUrl": "https://airtable.com/appj0uoMAjfFQy7pp/tblUaKjuNryXnNKRN"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "channel_name": "={{ $('title_matches_keywords').item.json.channel_name }}",
+            "matched_keyword": "={{ $('title_matches_keywords').item.json.matched_keyword }}",
+            "published_at": "={{ $('title_matches_keywords').item.json.published_at }}",
+            "video_link": "={{ $('build_video_link').item.json.video_link }}",
+            "video_title": "={{ $('title_matches_keywords').item.json.video_title }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "channel_name",
+              "displayName": "channel_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "video_title",
+              "displayName": "video_title",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "video_link",
+              "displayName": "video_link",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "published_at",
+              "displayName": "published_at",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "matched_keyword",
+              "displayName": "matched_keyword",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": true
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1680,
+        -100
+      ],
+      "id": "7841f907-7de0-4735-bfdc-68dc75c9e5a8",
+      "name": "log_video",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "PlTFylf9dHBjalzD",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(item => {\n  const json = item.json;\n\n  const title = json.video_title?.toLowerCase();\n  const keywordList = json.keywords?.toLowerCase().split(',').map(k => k.trim()) || [];\n\n  let matched = null;\n  if (title && keywordList.length > 0) {\n    matched = keywordList.find(keyword => title.includes(keyword)) || null;\n  }\n\n  return {\n    json: {\n      ...json,\n      matched_keyword: matched\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        900,
+        0
+      ],
+      "id": "ff7ca0f7-975f-4568-be39-384f9ed77f23",
+      "name": "title_matches_keywords",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "content": "## This workflow monitors a list of YouTube channels stored in Airtable and sends a Telegram alert when a new video is published that matches specified keywords. It filters irrelevant uploads, stores relevant video data in Airtable, and updates the last-checked timestamp to avoid duplicates.",
+        "height": 680,
+        "width": 2120,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -20,
+        -220
+      ],
+      "id": "d206ac73-143c-4bae-abb4-4a7f770daeb2",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appj0uoMAjfFQy7pp",
+          "mode": "list",
+          "cachedResultName": "youtube tracker",
+          "cachedResultUrl": "https://airtable.com/appj0uoMAjfFQy7pp"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl99lmxz4m6qcxTg",
+          "mode": "list",
+          "cachedResultName": "channels",
+          "cachedResultUrl": "https://airtable.com/appj0uoMAjfFQy7pp/tbl99lmxz4m6qcxTg"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('extract_video_info').all()[0].json.record_id }}",
+            "last_published_at": "={{ $('extract_video_info').item.json.published_at }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "channel_id",
+              "displayName": "channel_id",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "channel_name",
+              "displayName": "channel_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "last_published_at",
+              "displayName": "last_published_at",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "keywords",
+              "displayName": "keywords",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": true
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1880,
+        -100
+      ],
+      "id": "a005fec3-c178-4905-a6fb-0c915d6161cb",
+      "name": "update_last_published",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "PlTFylf9dHBjalzD",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "get_channels_info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "extract_video_info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "build_video_link",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "extract_video_info": {
+      "main": [
+        [
+          {
+            "node": "title_matches_keywords",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram": {
+      "main": [
+        [
+          {
+            "node": "log_video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "build_video_link": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_channels_info": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "log_video": {
+      "main": [
+        [
+          {
+            "node": "update_last_published",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "title_matches_keywords": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Operation, do nothing": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update_last_published": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "5735cbd9-11e8-456b-9d9b-ac564a523853",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6f4f524c315a78d6d334218b56a37eb1c3d445a621abc97fa800c5b4c2a6aab5"
+  },
+  "id": "HQv7WEOhvDRVVIZm",
+  "tags": []
+}

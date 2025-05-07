@@ -73,7 +73,7 @@ This workflow ingests documents uploaded to Google Drive and keeps the FAQ datab
 
 1. Import both JSON workflows into your n8n instance.
 2. Set up authentication for all services.
-3. Connect the Auralith Chat Agent to your preferred messaging platform.
+3. Open the included HTML file (`index.html`) in a browser to interact with the Auralith Chat Agent or connect it to a frontend or interface of your choice via webhook integration.
 4. Activate the Auralith Uploader to monitor your Google Drive folder.
 
 ## Testing
@@ -82,12 +82,19 @@ This workflow ingests documents uploaded to Google Drive and keeps the FAQ datab
 - Send a message to the chatbot and confirm that it retrieves and responds with relevant FAQ content.
 - Use the "Test workflow" button in n8n to simulate individual steps.
 
+## Hosted Chatbot UI (Optional)
+
+This project includes a simple HTML interface (`index.html`) that connects to the hosted Auralith Chat Agent workflow. This allows users to interact with the chatbot via a browser.
+
+You can open the file directly in a browser or embed it into another frontend environment.
+
 ## File Structure
 
 ```plaintext
 /
 auralith-faq-chatbot/
 ├── README.md
+├── index.html
 ├── images/
 │   ├── auralith-chat-agent-annotated.png
 │   └── auralith-uploader-annotated.png
