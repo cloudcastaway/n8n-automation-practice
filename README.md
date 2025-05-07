@@ -22,7 +22,7 @@ This collection includes both independently built workflows and others created b
 - **[Telegram Multitool Chat Agent - Expanded](./telegram-multitool-expanded)**  
   An enhanced version of the basic agent with support for voice input, calendar management, and Gmail integration via sub-workflows.
 
-- **[Pet Adoption Email Automation](./pet-adoption-email)**  
+- **[Pet Adoption Email](./pet-adoption-email)**  
   Sends a formatted email via Gmail whenever a new record is added to an Airtable pet adoption table.
 
 ## Technologies Used
@@ -39,3 +39,7 @@ This collection includes both independently built workflows and others created b
 ## Purpose
 
 This repository serves as both a personal learning log and a practical demonstration of how to use n8n to build real-world, AI-powered automation workflows with modular design and external API integrations.
+
+## Observação
+
+Este repositório está documentado em inglês por padrão. Caso prefira uma versão em português, estou disponível para fornecer ou explicar o conteúdo conforme necessário.
