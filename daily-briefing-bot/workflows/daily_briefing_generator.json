@@ -1,0 +1,408 @@
+{
+  "name": "daily-briefing-generator",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -800,
+        0
+      ],
+      "id": "974955c0-6768-4d3e-ad9a-6246fa3421c7",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ { \"chat_id\": $json.chat_id, \"first_name\": $json.first_name, \"city\": $json.city, \"currency_1\": $json.currency_1, \"currency_2\": $json.currency_2, \"email_address\": $json.email_address} }}",
+        "options": {
+          "systemMessage": "=# Role  \nYou are a **Personal Update Bot** that sends daily messages to users via Telegram or Email.\n\n# Users  \nEveryday people expecting a short, friendly update.\n\n# Task  \nGenerate a brief, personalized message for the single user provided in the input.  \nOnly use the data provided — never reference or generate messages for other users.\n\n# Tools  \n- **get_weather** → Get current weather for `city`  \n- **get_exchange_rate** → Get exchange rate from `currency_1` to `currency_2`  \n- **send_telegram** → Send the final message via Telegram  \n- **send_email** → Send the final message via Email  \n\n# Channel Selection Logic  \n- If `email_address` is **not blank**, use the `send_email` tool.  \n- If `email_address` is **blank**, use the `send_telegram` tool.  \n- Never use both tools. Only one message should be sent.\n\n# Tool Usage Rules  \n- Only generate a message for the user whose data was passed to you.  \n- Do not mention or refer to any other users.  \n- Use the provided `chat_id` or `email_address` to direct the message.  \n- When using the `send_telegram` tool:  \n  - `chat_id` must be a string containing the numeric Telegram chat ID  \n  - generated message must use **Telegram's original Markdown (not MarkdownV2 or HTML)**  \n  - Do not include characters or formatting incompatible with Markdown  \n\n# Message Format  \n- Friendly, not overly casual  \n- Markdown formatted (Telegram’s original Markdown, not MarkdownV2)  \n- Include all three: greeting (with `first_name`), weather, exchange rate  \n- Keep it short, clear, and personalized  \n- Message should be easy to read and grammatically correct"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        -80,
+        -20
+      ],
+      "id": "946a027c-b2c8-4c8d-af28-a3fefe2b3d3d",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -120,
+        200
+      ],
+      "id": "bad1c94e-7bf2-4fc3-b3ba-d8918ab53d94",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "k6Pyshrmyh8kvz6V",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "Retrieves the conversion rate from currency_1 to currency_2 for a fixed amount (1) using exchangerate.host API.",
+        "url": "=https://api.exchangerate.host/convert?from={{ $json.currency_1 }}&to={{ $json.currency_2 }}&amount=1&access_key=23ced1731320648ce95533efed64cfb1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        140,
+        200
+      ],
+      "id": "9c0949e0-de87-4d90-a01d-895611e5e1bc",
+      "name": "get_exchange_rate"
+    },
+    {
+      "parameters": {
+        "cityName": "={{ $json.city }}"
+      },
+      "type": "n8n-nodes-base.openWeatherMapTool",
+      "typeVersion": 1,
+      "position": [
+        40,
+        200
+      ],
+      "id": "eead8d2c-4c64-4db1-9596-fb99100e6da3",
+      "name": "get_weather",
+      "credentials": {
+        "openWeatherMapApi": {
+          "id": "BQjJiXTSdczngk3m",
+          "name": "OpenWeatherMap account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "app0nvT9TUJSDKGRt",
+          "mode": "list",
+          "cachedResultName": "daily-briefing-database",
+          "cachedResultUrl": "https://airtable.com/app0nvT9TUJSDKGRt"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblKojOhyUu71nPEh",
+          "mode": "list",
+          "cachedResultName": "Table 1",
+          "cachedResultUrl": "https://airtable.com/app0nvT9TUJSDKGRt/tblKojOhyUu71nPEh"
+        },
+        "options": {
+          "fields": [
+            "chat_id",
+            "first_name",
+            "city",
+            "currency_1",
+            "currency_2",
+            "email_address"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -640,
+        0
+      ],
+      "id": "67d30c68-23c2-452c-8391-fc518ebaa911",
+      "name": "read_data",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "PlTFylf9dHBjalzD",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chat_id }}",
+        "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Text', `Text in Markdown.`, 'string') }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "Markdown"
+        }
+      },
+      "type": "n8n-nodes-base.telegramTool",
+      "typeVersion": 1.2,
+      "position": [
+        320,
+        200
+      ],
+      "id": "47a96df6-4638-4c07-a46b-85a496070045",
+      "name": "send_telegram",
+      "webhookId": "0fd289f6-024c-48f1-9b35-55e8efd7cd36",
+      "credentials": {
+        "telegramApi": {
+          "id": "IxZtI0cV5xLx4jIH",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        420,
+        200
+      ],
+      "id": "e1c2e929-25d3-405b-a60d-68a04c2af4cc",
+      "name": "send_email",
+      "webhookId": "2b7fe260-b727-4bb9-9eee-743a379f154d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "vR78wGA6fF28TUch",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "reset": false
+        }
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -300,
+        0
+      ],
+      "id": "819b63cb-3a37-4efe-a392-1e7ffa222f59",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2a1ac63b-1253-40fd-89fc-b37ffb1f5560",
+              "name": "chat_id",
+              "value": "={{ $json.chat_id }}",
+              "type": "string"
+            },
+            {
+              "id": "f54b25de-e381-4eb2-b037-47da5d25825e",
+              "name": "first_name",
+              "value": "={{ $json.first_name }}",
+              "type": "string"
+            },
+            {
+              "id": "7e7b894b-5b15-42cd-8c6b-b7f294032ea8",
+              "name": "city",
+              "value": "={{ $json.city }}",
+              "type": "string"
+            },
+            {
+              "id": "64180051-8af8-4095-8752-d5580976f291",
+              "name": "currency_1",
+              "value": "={{ $json.currency_1 }}",
+              "type": "string"
+            },
+            {
+              "id": "50ff2cbb-2c76-4cb9-9243-09a0f8403004",
+              "name": "currency_2",
+              "value": "={{ $json.currency_2 }}",
+              "type": "string"
+            },
+            {
+              "id": "b8744755-0014-464b-92f5-6bd655b38f0c",
+              "name": "email_address",
+              "value": "={{$json.email_address || \"\"}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -480,
+        0
+      ],
+      "id": "e93a2f7a-9972-41fc-ad63-f94dcebe9f39",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "content": "## This workflow runs daily to generate personalized briefings for each registered user. It reads preferences from Airtable, fetches the exchange rate between two user-specified currencies and the weather in their chosen city, formats a message using OpenAI, and sends it via Telegram or email.",
+        "height": 580,
+        "width": 1400,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -860,
+        -180
+      ],
+      "id": "a26a7b58-abbe-48f4-8afe-937efdef0b9b",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "read_data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    },
+    "get_exchange_rate": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_weather": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "read_data": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "send_telegram": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "send_email": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "84aa9120-ffc0-415f-b34b-f31fdf97a3d6",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6f4f524c315a78d6d334218b56a37eb1c3d445a621abc97fa800c5b4c2a6aab5"
+  },
+  "id": "HySTkiqwr7G57uaS",
+  "tags": [
+    {
+      "name": "daily briefing bot",
+      "id": "VsK39YxwZ8cUISig",
+      "createdAt": "2025-05-07T00:53:18.655Z",
+      "updatedAt": "2025-05-07T00:53:18.655Z"
+    }
+  ]
+}

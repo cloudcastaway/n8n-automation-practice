@@ -1,0 +1,510 @@
+{
+  "name": "briefing-register-user",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -520,
+        60
+      ],
+      "id": "e7cb7c4d-6cd8-4201-b3a7-0e34e20e65fe",
+      "name": "Telegram Trigger",
+      "webhookId": "e88ba164-eff9-4a81-9e0d-f0c8b0b4f001",
+      "credentials": {
+        "telegramApi": {
+          "id": "IxZtI0cV5xLx4jIH",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c8d263f4-a0cb-4731-87b2-1b923eadc245",
+              "name": "chat_id",
+              "value": "={{ $json.message.chat.id }}",
+              "type": "string"
+            },
+            {
+              "id": "95f2dad0-35b9-4821-8a15-941c57014621",
+              "name": "message",
+              "value": "={{ $json.message.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -300,
+        60
+      ],
+      "id": "5c1ca46e-b883-45ef-b538-37694b1cf7c1",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+        "text": "=Hi {{ $('Telegram Trigger').item.json.message.chat.first_name }}!\nLet’s get your daily briefing set up. Just reply with the following:\n\n• Your **city** (for the weather),\n• **Two currency codes** you’d like to track,\n• The **platform** where you'd like to receive your briefing (Telegram or email - if it's email, please include your email address).",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        260,
+        -100
+      ],
+      "id": "f7e7046a-69e9-45b5-a0c2-fdd4aa636605",
+      "name": "Telegram",
+      "webhookId": "6c72a59c-6ac2-42fa-9709-c7e16dfadeed",
+      "credentials": {
+        "telegramApi": {
+          "id": "IxZtI0cV5xLx4jIH",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "0198356e-cd56-424a-ade3-3330ebbb8b8b",
+              "leftValue": "={{ $('Edit Fields').item.json.message }}",
+              "rightValue": "/start",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        60,
+        60
+      ],
+      "id": "a6dea3ca-c47a-40e0-8ae6-370157a1a439",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "base": {
+          "__rl": true,
+          "value": "app0nvT9TUJSDKGRt",
+          "mode": "list",
+          "cachedResultName": "daily-briefing-database",
+          "cachedResultUrl": "https://airtable.com/app0nvT9TUJSDKGRt"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblKojOhyUu71nPEh",
+          "mode": "list",
+          "cachedResultName": "Table 1",
+          "cachedResultUrl": "https://airtable.com/app0nvT9TUJSDKGRt/tblKojOhyUu71nPEh"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "chat_id": "={{ String($('Telegram Trigger').item.json.message.from.id) }}",
+            "first_name": "={{ $('Telegram Trigger').item.json.message.from.first_name }}",
+            "city": "={{ $json.output.city }}",
+            "currency_1": "={{ $json.output.currency_1 }}",
+            "currency_2": "={{ $json.output.currency_2 }}",
+            "email_address": "={{ $json.output.email_address }}"
+          },
+          "matchingColumns": [
+            "chat_id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "chat_id",
+              "displayName": "chat_id",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "first_name",
+              "displayName": "first_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "city",
+              "displayName": "city",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "currency_1",
+              "displayName": "currency_1",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "currency_2",
+              "displayName": "currency_2",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "email_address",
+              "displayName": "email_address",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        640,
+        140
+      ],
+      "id": "8c95a32c-1400-4df1-b43c-4e9c515d5465",
+      "name": "write_data",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "PlTFylf9dHBjalzD",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "app0nvT9TUJSDKGRt",
+          "mode": "list",
+          "cachedResultName": "Untitled Base",
+          "cachedResultUrl": "https://airtable.com/app0nvT9TUJSDKGRt"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblKojOhyUu71nPEh",
+          "mode": "list",
+          "cachedResultName": "Table 1",
+          "cachedResultUrl": "https://airtable.com/app0nvT9TUJSDKGRt/tblKojOhyUu71nPEh"
+        },
+        "filterByFormula": "={chat_id} =  \"{{ $json.chat_id }}\"",
+        "options": {
+          "fields": [
+            "chat_id",
+            "first_name",
+            "city",
+            "currency_1",
+            "currency_2"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -120,
+        60
+      ],
+      "id": "7f19e222-9d0a-4909-a79e-d40531971136",
+      "name": "read_data",
+      "alwaysOutputData": true,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "PlTFylf9dHBjalzD",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Edit Fields').item.json.message }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=* Extract the **first city** and **first two currency codes** from the user's message.\n* If multiple cities or currency codes are mentioned, use only the **first city** and the **first two currency codes**.\n* If a city or currency code is misspelled or incomplete, use SerpAPI to infer the most likely correct version. Only return a value if SerpAPI confirms it is a valid city or ISO 4217 currency code. Otherwise, return \"\". Limit to 10 SerpAPI attempts per item.\n* If fewer than one city or two currency codes are found, return blank.\n* If an **email address** is present, return it as `email_address`; otherwise, return `email_address` as blank.\n* Format:\n\n  * `city` → Title Case\n  * `currency_1`, `currency_2` → UPPERCASE\n  * `email_address` → lowercase\n* Output in the following JSON format:\n\n```json\n{\n  \"city\": \"Dublin\",\n  \"currency_1\": \"USD\",\n  \"currency_2\": \"JPY\",\n  \"email_address\": \"example@email.com\"\n}\n```\n",
+          "maxIterations": 15
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        300,
+        140
+      ],
+      "id": "8ebc1d9d-e73d-4b16-a896-9574c5e60760",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        240,
+        340
+      ],
+      "id": "04f5bfaf-16f9-477b-9d5c-ba386b355396",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "k6Pyshrmyh8kvz6V",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"city\": \"dublin\",\n  \"currency_1\": \"usd\",\n  \"currency_2\": \"jpy\",\n  \"email_address\": \"example@email.com\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        560,
+        340
+      ],
+      "id": "7bc8f459-cd37-4e4e-b2f5-a34a9feeb90e",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolSerpApi",
+      "typeVersion": 1,
+      "position": [
+        400,
+        340
+      ],
+      "id": "a25ae281-543e-40fd-899a-d8c06e74fef3",
+      "name": "SerpAPI",
+      "credentials": {
+        "serpApi": {
+          "id": "U9io8RPuNycmydbO",
+          "name": "SerpAPI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## This workflow registers new users by extracting their city and two currency preferences from a Telegram message. It stores this data in Airtable to enable personalized daily briefings.",
+        "height": 680,
+        "width": 1600,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -580,
+        -200
+      ],
+      "id": "5443616c-1f69-46ec-845b-b96bc79e6ba9",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "read_data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram": {
+      "main": [
+        []
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "write_data": {
+      "main": [
+        []
+      ]
+    },
+    "read_data": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "write_data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SerpAPI": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b3cf45e3-28f5-4c74-b9a5-def4143d7383",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6f4f524c315a78d6d334218b56a37eb1c3d445a621abc97fa800c5b4c2a6aab5"
+  },
+  "id": "EfxJO6aZy7sgCeBB",
+  "tags": [
+    {
+      "createdAt": "2025-05-04T23:12:04.859Z",
+      "updatedAt": "2025-05-04T23:12:04.859Z",
+      "id": "aK5K967IZFr9jFZr",
+      "name": "Daily Briefing Bot"
+    },
+    {
+      "name": "daily briefing bot",
+      "id": "VsK39YxwZ8cUISig",
+      "createdAt": "2025-05-07T00:53:18.655Z",
+      "updatedAt": "2025-05-07T00:53:18.655Z"
+    }
+  ]
+}
