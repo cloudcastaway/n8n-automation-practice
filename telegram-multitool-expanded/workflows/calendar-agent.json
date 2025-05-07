@@ -1,0 +1,464 @@
+{
+  "name": "Calendar Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -20,
+        140
+      ],
+      "id": "3b62c5fa-c971-4e9f-b495-4ead1d2c3233",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{$json.query}}",
+        "options": {
+          "systemMessage": "# Role\nYou are a helpful assistant with access to calendar tools.\n\n# Tools\nYou use the appropriate calendar tool depending on the user's request.\n\n## event_set_with_guests\nUse this tool to create calendar events with guests.\n\n## event_set  \nUse this tool to create calendar events.\n\n## event_get  \nUse this tool to retrieve events from the calendar.\n\n## event_update  \nUse this tool to update an existing event.\n\n## event_delete  \nUse this tool to delete a calendar event."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        200,
+        140
+      ],
+      "id": "8bb21a2f-f02a-4c94-8362-c6238e2d4259",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        160,
+        340
+      ],
+      "id": "f4ccc651-6341-4485-82c3-ff1dbf21a9d8",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "k6Pyshrmyh8kvz6V",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "brunapolizeli28@gmail.com",
+          "mode": "list",
+          "cachedResultName": "brunapolizeli28@gmail.com"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        360,
+        580
+      ],
+      "id": "59688cd4-dd43-46f0-8c41-903973685246",
+      "name": "event_set",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "IpNk6dBaZ6BZuD7h",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "calendar": {
+          "__rl": true,
+          "value": "brunapolizeli28@gmail.com",
+          "mode": "list",
+          "cachedResultName": "brunapolizeli28@gmail.com"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        680,
+        580
+      ],
+      "id": "07417051-28bc-4276-bf0d-c932d6948fe0",
+      "name": "event_delete",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "IpNk6dBaZ6BZuD7h",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "brunapolizeli28@gmail.com",
+          "mode": "list",
+          "cachedResultName": "brunapolizeli28@gmail.com"
+        },
+        "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('After', ``, 'string') }}",
+        "timeMax": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Before', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        460,
+        580
+      ],
+      "id": "441b4c44-f1be-4a4a-a340-38b2cc269a54",
+      "name": "event_get",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "IpNk6dBaZ6BZuD7h",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "calendar": {
+          "__rl": true,
+          "value": "brunapolizeli28@gmail.com",
+          "mode": "list",
+          "cachedResultName": "brunapolizeli28@gmail.com"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
+        "updateFields": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        560,
+        580
+      ],
+      "id": "dbc43a68-dfe3-42d2-b183-fe64c27ba602",
+      "name": "event_update",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "IpNk6dBaZ6BZuD7h",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "brunapolizeli28@gmail.com",
+          "mode": "list",
+          "cachedResultName": "brunapolizeli28@gmail.com"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        240,
+        580
+      ],
+      "id": "8208ecf4-d05f-4f2b-ac91-1c4c0fd19b40",
+      "name": "event_set_with_guests",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "IpNk6dBaZ6BZuD7h",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4588f998-0ff9-4795-ae4c-32b56ede25fe",
+              "name": "response",
+              "value": "={{$json.output}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        760,
+        20
+      ],
+      "id": "41982017-2b0f-4f9a-8308-bb084c16641f",
+      "name": "Success"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6c9b65be-e633-45e0-a28b-163ed63fc552",
+              "name": "response",
+              "value": "=Unable to perform task, please try again.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        760,
+        240
+      ],
+      "id": "518c3217-295b-4baa-a000-c83d0dc62e16",
+      "name": "Failure"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{$json.output}}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "id": "3ab141cd-e001-475e-9213-a37d00330a03"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "success"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "5dca6286-b998-4d01-b5f2-b589a57b9396",
+                    "leftValue": "={{$json.output}}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notExists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "failure"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        540,
+        140
+      ],
+      "id": "fc77d4c1-269b-47b7-8f30-c35f9ec498c6",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "content": "Entry point triggered by the main Telegram Agent.",
+        "height": 220,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        80
+      ],
+      "id": "022f32ac-016b-4ea5-b5ed-e2cef1f4eb20",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "Send structured success or error outputs back to the calling workflow.",
+        "height": 460,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        700,
+        -60
+      ],
+      "id": "318b6fd5-c020-4614-a197-5e8710d7730c",
+      "name": "Sticky Note1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "event_set": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "event_delete": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "event_get": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "event_update": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "event_set_with_guests": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Success",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "480df012-0e46-4159-949f-881f5a5eec3c",
+  "meta": {
+    "instanceId": "6f4f524c315a78d6d334218b56a37eb1c3d445a621abc97fa800c5b4c2a6aab5"
+  },
+  "id": "HC80wWixXLv99ZpE",
+  "tags": [
+    {
+      "name": "expanded multitool agent",
+      "id": "hduzoCvNo1ZtzlhD",
+      "createdAt": "2025-05-06T23:51:43.940Z",
+      "updatedAt": "2025-05-06T23:51:43.940Z"
+    }
+  ]
+}

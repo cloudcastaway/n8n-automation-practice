@@ -1,0 +1,572 @@
+{
+  "name": "Email Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -40,
+        100
+      ],
+      "id": "02b22305-c9f8-4cb1-bb86-b0770986e7e6",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.query }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        180,
+        100
+      ],
+      "id": "aab45df1-83a0-4298-8676-e6e54f530d99",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        140,
+        320
+      ],
+      "id": "3d0bf043-a4fb-4df2-90ad-805aabe1ac5e",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "k6Pyshrmyh8kvz6V",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "emailType": "text",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        300,
+        480
+      ],
+      "id": "7d9d8cdc-9451-4771-b0e3-405b9dd626bd",
+      "name": "email_send",
+      "webhookId": "0ad36064-fe76-4101-a773-c87e848fdc1b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "vR78wGA6fF28TUch",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        420,
+        480
+      ],
+      "id": "744abb75-37fb-4e30-9a56-f037d682658a",
+      "name": "emails_get",
+      "webhookId": "0ad36064-fe76-4101-a773-c87e848fdc1b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "vR78wGA6fF28TUch",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        540,
+        480
+      ],
+      "id": "a1dcd087-d361-4704-856e-09821d300294",
+      "name": "email_draft_create",
+      "webhookId": "0ad36064-fe76-4101-a773-c87e848fdc1b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "vR78wGA6fF28TUch",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "messageId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message_ID', ``, 'string') }}",
+        "emailType": "text",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        660,
+        480
+      ],
+      "id": "eb6b9c25-c6a6-4e36-8bb5-2ef2bc8e46f2",
+      "name": "reply_send",
+      "webhookId": "0ad36064-fe76-4101-a773-c87e848fdc1b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "vR78wGA6fF28TUch",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {
+          "threadId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Thread_ID', `Thread ID of the email you're replying to.`, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        780,
+        480
+      ],
+      "id": "08b3fca4-c750-4877-acfd-23012f0e214d",
+      "name": "reply_draft_create",
+      "webhookId": "0ad36064-fe76-4101-a773-c87e848fdc1b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "vR78wGA6fF28TUch",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "markAsRead",
+        "messageId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message_ID', `ID of the email message you're marking as read.`, 'string') }}"
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        900,
+        480
+      ],
+      "id": "e458f5cb-8efe-4300-a3ce-faefbe9013df",
+      "name": "mark_read",
+      "webhookId": "0ad36064-fe76-4101-a773-c87e848fdc1b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "vR78wGA6fF28TUch",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "markAsUnread",
+        "messageId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message_ID', `ID of the email message you're marking as unread.`, 'string') }}"
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        1020,
+        480
+      ],
+      "id": "d09bf992-0613-498a-a5c7-4d33f27d4701",
+      "name": "mark_unread",
+      "webhookId": "0ad36064-fe76-4101-a773-c87e848fdc1b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "vR78wGA6fF28TUch",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "label"
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        1140,
+        480
+      ],
+      "id": "bd2f2bb5-f92c-41be-9d3c-a7c27853609e",
+      "name": "labels_get",
+      "webhookId": "0ad36064-fe76-4101-a773-c87e848fdc1b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "vR78wGA6fF28TUch",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message_ID', `ID of the email message(s) you're labeling.`, 'string') }}",
+        "labelIds": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Label_Names_or_IDs', `Names of the labels or ID of the labels you're applying to the email message(s).`, 'string') }}"
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        1260,
+        480
+      ],
+      "id": "882eb5ae-af7b-4876-9bb1-bc044ebbe64e",
+      "name": "emails_label",
+      "webhookId": "0ad36064-fe76-4101-a773-c87e848fdc1b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "vR78wGA6fF28TUch",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{$json.output}}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "id": "0a738cae-6b09-4252-aa56-6bc5a4921060"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "success"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "120a8a05-3797-4ab0-9f91-3bf6e420e49c",
+                    "leftValue": "={{$json.output}}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notExists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "failure"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        540,
+        100
+      ],
+      "id": "6d2c90b9-4d8e-4df3-9c65-76ace70e1cba",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ce1364df-f9fc-472c-b2ad-e64def853c3d",
+              "name": "response",
+              "value": "={{$json.output}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        760,
+        -40
+      ],
+      "id": "ac2d7ce0-cb3e-421c-8b8d-0067dc6fe4ec",
+      "name": "Success"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ce1364df-f9fc-472c-b2ad-e64def853c3d",
+              "name": "response",
+              "value": "=Unable to perform task, please try again.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        760,
+        160
+      ],
+      "id": "7878e494-c074-43a3-80d8-89af012f259c",
+      "name": "Failure"
+    },
+    {
+      "parameters": {
+        "content": "Triggered by the main Telegram Agent when the task involves Gmail.",
+        "height": 220,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -100,
+        40
+      ],
+      "id": "a2d1773d-c61a-492e-b344-8e6402d0644c",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "Structures and returns the output for success or error cases.",
+        "height": 420,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        700,
+        -100
+      ],
+      "id": "eb1de68d-6cdc-4ac5-92c3-0faf2331fd67",
+      "name": "Sticky Note1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "email_send": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "emails_label": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "labels_get": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "emails_get": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "email_draft_create": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "reply_send": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "reply_draft_create": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "mark_read": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "mark_unread": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Success",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ff151fb9-d32a-423a-a0a4-fb0fd4d11558",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6f4f524c315a78d6d334218b56a37eb1c3d445a621abc97fa800c5b4c2a6aab5"
+  },
+  "id": "xVK7iDt0UbOrvfe1",
+  "tags": [
+    {
+      "name": "expanded multitool agent",
+      "id": "hduzoCvNo1ZtzlhD",
+      "createdAt": "2025-05-06T23:51:43.940Z",
+      "updatedAt": "2025-05-06T23:51:43.940Z"
+    }
+  ]
+}
