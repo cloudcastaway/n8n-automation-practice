@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Auralith Dynamics</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
+
+  <style>
+    :root {
+    --chat--color-primary: #004466;
+    --chat--color-primary-shade-50: #003a59;
+    --chat--color-primary-shade-100: #00314b;
+    --chat--color-secondary: #007fa3;
+    --chat--color-secondary-shade-50: #006e8d;
+    --chat--color-white: #ffffff;
+    --chat--color-light: #f2f4f8;
+    --chat--color-light-shade-50: #e6e9f1;
+    --chat--color-light-shade-100: #c2c5cc;
+    --chat--color-medium: #d2d4d9;
+    --chat--color-dark: #101330;
+    --chat--color-disabled: #777980;
+    --chat--color-typing: #404040;
+
+    --chat--toggle--background: var(--chat--color-primary);
+    --chat--toggle--hover--background: var(--chat--color-primary-shade-50);
+    --chat--toggle--active--background: var(--chat--color-primary-shade-100);
+    --chat--toggle--color: var(--chat--color-white);
+    --chat--toggle--size: 64px;
+
+    --chat--window--width: 450px;
+    --chat--window--height: 560px;
+
+    --chat--header-height: 120px;
+    --chat--header--padding: 1.25rem;
+    --chat--header--background: var(--chat--color-dark);
+    --chat--header--color: var(--chat--color-light);
+    --chat--header--gap: 2.0rem;
+    --chat--heading--font-size: 1.6rem;
+    --chat--subtitle--font-size: 1.1rem;
+    --chat--subtitle--line-height: 1.8;
+
+    --chat--textarea--height: 56px;
+
+    --chat--message--font-size: 0.75rem;
+    --chat--message-line-height: 1.8;
+    --chat--message--padding: 1rem;
+    --chat--message--border-radius: 0.25rem;
+    --chat--message--bot--background: var(--chat--color-white);
+    --chat--message--bot--color: var(--chat--color-dark);
+    --chat--message--user--background: var(--chat--color-secondary);
+    --chat--message--user--color: var(--chat--color-white);
+    --chat--message--pre--background: rgba(0, 0, 0, 0.05);
+  }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background-color: #f4f8fb;
+      color: #333;
+    }
+
+    header {
+      background-color: #004466;
+      color: #fff;
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
+    }
+
+    header p {
+      margin: 0.5rem 0 0;
+      font-size: 1rem;
+    }
+
+    section {
+      padding: 2rem;
+      max-width: 800px;
+      margin: auto;
+    }
+
+    .highlight {
+      color: #007fa3;
+      font-weight: bold;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background-color: #e0eef5;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Auralith Dynamics</h1>
+    <p>Innovating the Future of Wind Energy</p>
+  </header>
+
+  <section>
+    <h2>Welcome</h2>
+    <p>
+      At <span class="highlight">Auralith Dynamics</span>, we design advanced wind turbines and intelligent energy software to power a cleaner world.
+    </p>
+    <p>
+      Our mission is to optimize renewable energy through cutting-edge technology and sustainable design.
+    </p>
+    <h3>Contact</h3>
+    <p>Email: contact@auralithdynamics.com</p>
+    <p>Phone: +46 (0) 40 123 456</p>
+  </section>
+
+  <footer>
+    &copy; 2025 Auralith Dynamics AB — All rights reserved.
+  </footer>
+
+  <div id="n8n-chat"></div>
+
+  <script type="module">
+    import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
+
+    createChat({
+      webhookUrl: 'https://brunap.app.n8n.cloud/webhook/12c97d1a-5bd5-49b9-8069-3319f4ac1141/chat',
+      target: '#n8n-chat',
+      mode: 'window',
+      showWelcomeScreen: false,
+      initialMessages: [
+        'Welcome to Auralith Dynamics — how can we help you today?'
+      ],
+      i18n: {
+        en: {
+          title: 'Welcome to Auralith',
+          subtitle: 'Get support, product info, or technical guidance — just ask.',
+          inputPlaceholder: 'Type your question..',
+          getStarted: 'New Conversation',
+          footer: ''
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>
